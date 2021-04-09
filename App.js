@@ -5,6 +5,13 @@ import { View, Text } from 'react-native'
 
 import * as firebase from 'firebase'
 
+import { Provider } from 'react-redux'
+import { createStore, applyMiddleware } from 'redux'
+import rootReducer from './redux/reducers'
+import thunk from 'redux-thunk'
+
+const store = createStore(rootReducer, applyMiddleware(thunk))
+
 const firebaseConfig = {
   apiKey: "***",
   authDomain: "***",
@@ -25,6 +32,10 @@ import { createStackNavigator } from '@react-navigation/stack';
 
 import LandingScreen from './components/auth/Landing'
 import RegisterScreen from './components/auth/Register'
+import LoginScreen from './components/auth/Login'
+import MainScreen from './components/Main'
+import AddScreen from './components/main/Add'
+import SaveScreen from './components/main/Save'
 
 
 const Stack = createStackNavigator();
@@ -32,7 +43,7 @@ const Stack = createStackNavigator();
 
 export class App extends Component {
   constructor(props) {
-    super(props);
+    super()
     this.state = {
       loaded: false,
     }
@@ -69,15 +80,22 @@ export class App extends Component {
           <Stack.Navigator initialRouteName="Landing">
             <Stack.Screen name="Landing" component={LandingScreen} options={{ headerShown: false }} />
             <Stack.Screen name="Register" component={RegisterScreen} />
+            <Stack.Screen name="Login" component={LoginScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       );
     }
 
     return (
-      <View style={{ flex: 1, justifyContent: 'center' }}>
-        <Text>User is logged in</Text>
-      </View>
+      <Provider store={store}>
+        <NavigationContainer >
+          <Stack.Navigator initialRouteName="Main">
+            <Stack.Screen name="Main" component={MainScreen}  options={{ headerShown: false }} />
+            <Stack.Screen name="Add" component={AddScreen} navigation={this.props.navigation}/>
+            <Stack.Screen name="Save" component={SaveScreen} navigation={this.props.navigation}/>
+          </Stack.Navigator>
+        </NavigationContainer>
+      </Provider>
     )
   }
 }
